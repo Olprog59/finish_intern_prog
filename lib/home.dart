@@ -1,6 +1,6 @@
+import 'package:finish_intern_prog/admin.dart';
 import 'package:finish_intern_prog/user.dart';
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class _HomeState extends State<Home> {
               minimumSize: const Size(150, 60),
             ),
             onPressed: () {
-              windowManager.setSize(const Size(800, 300));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const Admin()));
             },
             child: const Text("Administrateur"),
           ),

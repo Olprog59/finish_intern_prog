@@ -1,4 +1,5 @@
 import 'package:finish_intern_prog/constants.dart';
+import 'package:finish_intern_prog/hand.dart';
 import 'package:finish_intern_prog/services.dart';
 import 'package:flutter/material.dart';
 
@@ -28,15 +29,15 @@ class _UserState extends State<User> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
+      child: Center(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
                   controller: TextEditingController(text: firstname),
                   decoration: const InputDecoration(border: OutlineInputBorder(), hintText: "Prénom"),
                   onChanged: (value) {
@@ -46,10 +47,13 @@ class _UserState extends State<User> {
                     return testFieldName(value);
                   },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextFormField(
                   controller: TextEditingController(text: lastname),
                   decoration: const InputDecoration(border: OutlineInputBorder(), hintText: "Nom"),
                   onChanged: (value) {
@@ -59,34 +63,41 @@ class _UserState extends State<User> {
                     return testFieldName(value);
                   },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                OutlinedButton(
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: OutlinedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      Map<dynamic, dynamic> data = {'firstname': firstname, 'lastname': lastname, 'finish': false};
                       print('rempli');
                       prefs.setString('firstname', firstname);
                       prefs.setString('lastname', lastname);
                       String id = $id(firstname, lastname);
                       final appw = ServiceAppwrite();
                       appw.documentGetOne(id).then((value) {
-                        print(value.data);
+                        value.data['finish'] = false;
+                        appw.documentUpdate(id, value.data);
+                        data = value.data;
                       }).catchError((_) {
-                        final doc = appw.documentCreate(id, {'firstname': firstname, 'lastname': lastname});
+                        final doc = appw.documentCreate(id, data);
                         print(doc);
                       });
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Hand(id: id, data: data)));
                     } else {
                       print('KO');
                     }
                   },
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(250, 50),
+                    minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50),
                   ),
                   child: const Text("Valider"),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
